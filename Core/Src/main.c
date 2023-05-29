@@ -93,6 +93,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
+  // Start timer without interrupt
+  HAL_TIM_Base_Start(&htim16);
 
   /* USER CODE END 2 */
 
@@ -100,6 +102,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	// If enough time has passed (100 ms)
+	if (__HAL_TIM_GET_COUNTER(&htim16) >= 1000)
+	{
+		// Toggle LD2
+		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		// Reset Timer 16 Counter
+		__HAL_TIM_SET_COUNTER(&htim16,0);
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -177,7 +187,7 @@ static void MX_TIM16_Init(void)
   htim16.Init.Period = 1000;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim16.Init.RepetitionCounter = 0;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
     Error_Handler();
