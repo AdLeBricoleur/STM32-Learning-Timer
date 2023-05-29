@@ -94,22 +94,13 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
   // Start timer without interrupt
-  HAL_TIM_Base_Start(&htim16);
-
+  HAL_TIM_Base_Start_IT(&htim16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	// If enough time has passed (100 ms)
-	if (__HAL_TIM_GET_COUNTER(&htim16) >= 1000)
-	{
-		// Toggle LD2
-		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-		// Reset Timer 16 Counter
-		__HAL_TIM_SET_COUNTER(&htim16,0);
-	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -271,7 +262,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+// Callback: timer has rolled over
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	// Toggle LD2
+	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+}
 /* USER CODE END 4 */
 
 /**
