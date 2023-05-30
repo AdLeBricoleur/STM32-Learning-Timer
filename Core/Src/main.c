@@ -93,14 +93,34 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
-  // Start timer without interrupt
-  HAL_TIM_Base_Start_IT(&htim16);
+  // Start PWM
+  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	// Set duty cycle of PWM (max value is 1000)
+	TIM16->CCR1 = 100; // 10%
+	// Wait during one second
+	HAL_Delay(1000);
+	// Set duty cycle of PWM (max value is 1000)
+	TIM16->CCR1 = 250; // 25%
+	// Wait during one second
+	HAL_Delay(1000);
+	// Set duty cycle of PWM (max value is 1000)
+	TIM16->CCR1 = 500; // 50%
+	// Wait during one second
+	HAL_Delay(1000);
+	// Set duty cycle of PWM (max value is 1000)
+	TIM16->CCR1 = 750; // 75%
+	// Wait during one second
+	HAL_Delay(1000);
+	// Set duty cycle of PWM (max value is 1000)
+	TIM16->CCR1 = 900; // 90%
+	// Wait during one second
+	HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -169,6 +189,9 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 0 */
 
+  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+
   /* USER CODE BEGIN TIM16_Init 1 */
 
   /* USER CODE END TIM16_Init 1 */
@@ -183,9 +206,36 @@ static void MX_TIM16_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
+  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
+  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
+  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
+  sBreakDeadTimeConfig.DeadTime = 0;
+  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
+  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
+  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
+  if (HAL_TIMEx_ConfigBreakDeadTime(&htim16, &sBreakDeadTimeConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN TIM16_Init 2 */
 
   /* USER CODE END TIM16_Init 2 */
+  HAL_TIM_MspPostInit(&htim16);
 
 }
 
@@ -262,12 +312,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// Callback: timer has rolled over
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	// Toggle LD2
-	HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-}
+
 /* USER CODE END 4 */
 
 /**
