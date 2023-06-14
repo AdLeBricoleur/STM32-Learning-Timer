@@ -5,7 +5,7 @@ Je travaille sur un Nucleo-L476RG.
 
 Pour connaître la configuration des Horloges et des Pinouts, il faut afficher le fichier .ioc sur CubeMX.
 
-Ensuite, j'ai codé dans le fichier Core/Src/main.c.
+Ensuite, j'ai codé dans le fichier Core/Src/main.c. J'utilise l'IDE CubeIDE.
 
 J'avais 3 objectifs :
 - utilisation d'un timer en polling
